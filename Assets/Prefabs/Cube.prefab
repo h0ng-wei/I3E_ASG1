@@ -128,3 +128,5 @@ MonoBehaviour:
   _rotation: {x: 45, y: 45, z: 45}
   _speed: 1
   onCollectEffect: {fileID: 8771972552311404799, guid: bbf9e36a48d6c5648a13889afab076fd, type: 3}
+  points: 1
+  collectSound: {fileID: 8300000, guid: c3c3ec27414e5a745bb411a2a29b4a09, type: 3}

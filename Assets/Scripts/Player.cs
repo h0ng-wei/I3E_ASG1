@@ -40,18 +40,21 @@ public class Player : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Collectibles"))
         {
-            collectables++;
-            points++;
-
-            Collectibles col = other.GetComponent<Collectibles>();
+            Collectibles col = other.GetComponentInParent<Collectibles>();
             if (col != null)
-            col.Collect();
+            {
+                collectables++;
+                points += col.points;
 
-            Debug.Log("Collectables: " + collectables);
-            Debug.Log("Points: " + points);
+                Debug.Log("Points value on this collectible: " + col.points);
+                Debug.Log("Collectables: " + collectables);
+                Debug.Log("Points: " + points);
 
-            SetCollectablesText();
-            SetPointsText();
+                col.Collect();
+
+                SetCollectablesText();
+                SetPointsText();
+            }
         }
     }
 
