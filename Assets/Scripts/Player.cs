@@ -3,6 +3,8 @@ using TMPro;
 
 public class Player : MonoBehaviour
 {
+    Door currentDoor; // Store the door object the player is currently able to interact with
+
     [SerializeField]
     int collectables;
 
@@ -10,12 +12,14 @@ public class Player : MonoBehaviour
     int points;
 
     [SerializeField]
+    int targetPoints = 50;
+
+    [SerializeField]
     TextMeshProUGUI collectablesText;
 
     [SerializeField]
     TextMeshProUGUI pointsText;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         collectables = 0;
@@ -25,7 +29,41 @@ public class Player : MonoBehaviour
         SetPointsText();
     }
 
-    // Update is called once per frame
+    void Update()
+    {
+        HandleDoorAutoClose();
+    }
+
+    void HandleDoorAutoClose()
+    {
+        if (currentDoor != null)
+        {
+            float distance = Vector3.Distance(transform.position, currentDoor.transform.position);
+            Debug.Log("Distance to door: " + distance);
+            if (distance > 5f)
+            {
+                Debug.Log("Auto closing door");
+                currentDoor.ForceClose();
+            }
+        }
+    }
+
+    void OnInteract() // Called automatically by Player Input via Send Messages when E is pressed
+    {
+        if (currentDoor != null) // Only interact with a door if the player is currently near one
+        {
+            Door doorScript = currentDoor.GetComponentInParent<Door>(); // Find the door script on the door object or its parents
+            if (doorScript != null) // Check if the door script was found successfully
+            {
+                currentDoor.Interact();
+            }
+            else
+            {
+                Debug.Log("No door nearby");
+            }
+        }
+    }
+
     void SetCollectablesText()
     {
         collectablesText.text = "Collectables: " + collectables.ToString() + " / 40";
@@ -46,16 +84,26 @@ public class Player : MonoBehaviour
                 collectables++;
                 points += col.points;
 
-                Debug.Log("Points value on this collectible: " + col.points);
-                Debug.Log("Collectables: " + collectables);
-                Debug.Log("Points: " + points);
-
                 col.Collect();
 
                 SetCollectablesText();
                 SetPointsText();
             }
         }
+
+        if (other.gameObject.CompareTag("Door")) // Check if the object entering the trigger is tagged as a door
+        {
+            currentDoor = other.GetComponentInParent<Door>(); // Store the door script so the player can interact with it later
+        }
     }
 
-}
+    void OnTriggerExit(Collider other)
+    {
+        if (other.gameObject.CompareTag("Door"))
+        {
+        // only clear the door reference if it is already closed
+        if (currentDoor != null && !currentDoor.IsOpen())
+            currentDoor = null;
+        }
+    }
+}   

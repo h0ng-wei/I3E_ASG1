@@ -13,8 +13,9 @@ GameObject:
   - component: {fileID: 4041630991261028965}
   - component: {fileID: 1691413602901485702}
   - component: {fileID: 6279112239738765867}
-  - component: {fileID: 366161977834890908}
-  - component: {fileID: 2639262083009096581}
+  - component: {fileID: 3741123274939154688}
+  - component: {fileID: 8569472534306396097}
+  - component: {fileID: 3780202649869309148}
   m_Layer: 0
   m_Name: Door1
   m_TagString: Untagged
@@ -249,7 +250,7 @@ MonoBehaviour:
   m_PreserveMeshAssetOnDestroy: 0
   assetGuid: 
   m_Mesh: {fileID: 0}
-  m_VersionIndex: 2160
+  m_VersionIndex: 2169
   m_IsSelectable: 1
   m_SelectedFaces: 
   m_SelectedEdges: []
@@ -335,8 +336,8 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 55373738257995888}
   m_Mesh: {fileID: 0}
---- !u!64 &366161977834890908
-MeshCollider:
+--- !u!65 &3741123274939154688
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -353,11 +354,10 @@ MeshCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 0}
---- !u!114 &2639262083009096581
+  serializedVersion: 3
+  m_Size: {x: 2.8596053, y: 3.9042287, z: 0.8749845}
+  m_Center: {x: 0.000007629398, y: 0.015000343, z: -0.000006824735}
+--- !u!114 &8569472534306396097
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -369,6 +369,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 933ceae269e5cee439f34df76b3639e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Door
-  openAngle: 90
-  closeDistance: 5
-  doorSpeed: 2
+--- !u!65 &3780202649869309148
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 55373738257995888}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 3, y: 4, z: 7}
+  m_Center: {x: 0.000007629396, y: 0.015000343, z: 0}
