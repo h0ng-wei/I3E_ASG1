@@ -1,35 +1,57 @@
 using UnityEngine;
 using TMPro;
+using System.Collections;
 
 public class Player : MonoBehaviour
 {
-    Door currentDoor; // Store the door object the player is currently able to interact with
+    Door currentDoor;
 
     public int collectables;
     public int points;
     public float currentHP = 100f;
 
     [SerializeField]
-    int targetPoints = 50;
+    float maxHP = 100f;
 
-    [SerializeField]
-    TextMeshProUGUI collectablesText;
+    [SerializeField] TextMeshProUGUI collectablesText;
 
-    [SerializeField]
-    TextMeshProUGUI pointsText;
+    [SerializeField] TextMeshProUGUI pointsText;
+
+    [SerializeField] TextMeshProUGUI hpText;
+
+    [SerializeField] TextMeshProUGUI countdownText;
+
+    [Header("Respawn")]
+    [SerializeField] Transform respawnPoint;
+    [SerializeField] GameObject gameOverScreen;
+
+    bool inPoisonGas = false;
+    bool inLava = false;
+    bool isDead = false;
+
+    public void EnterPoisonGas() => inPoisonGas = true;
+    public void ExitPoisonGas() => inPoisonGas = false;
+    public void EnterLava() => inLava = true;
+    public void ExitLava() => inLava = false;
 
     void Start()
     {
         collectables = 0;
         points = 0;
+        currentHP = maxHP;
+
+        if (gameOverScreen != null)
+            gameOverScreen.SetActive(false);
 
         SetCollectablesText();
         SetPointsText();
+        SetHPText();
     }
 
     void Update()
     {
         HandleDoorAutoClose();
+        HandleDamageOverTime();
     }
 
     void HandleDoorAutoClose()
@@ -38,25 +60,103 @@ public class Player : MonoBehaviour
         {
             float distance = Vector3.Distance(transform.position, currentDoor.transform.position);
             if (distance > 5f)
-            {
                 currentDoor.ForceClose();
-            }
         }
     }
 
-    void OnInteract() // Called automatically by Player Input via Send Messages when E is pressed
+    void HandleDamageOverTime()
     {
-        if (currentDoor != null) // Only interact with a door if the player is currently near one
+        if (inPoisonGas)
+            TakeDamage(1f * Time.deltaTime);
+
+        if (inLava)
+            TakeDamage(10f * Time.deltaTime);
+    }
+
+    public void TakeDamage(float amount)
+    {
+        if (isDead) return;
+        currentHP -= amount;
+        currentHP = Mathf.Clamp(currentHP, 0, maxHP);
+        SetHPText();
+
+        if (currentHP <= 0)
+            Die();
+    }
+
+    public void InstantDeath()
+    {
+        if (isDead) return;
+        currentHP = 0;
+        SetHPText();
+        Die();
+    }
+
+    void Die()
+    {
+        if (isDead) return;
+        isDead = true;
+
+        currentHP = 0;
+        inPoisonGas = false;
+        inLava = false;
+        SetHPText();
+
+        if (gameOverScreen != null)
+            gameOverScreen.SetActive(true);
+
+        StartCoroutine(Countdown());
+    }
+
+    IEnumerator Countdown()
+    {
+        int count = 3;
+        while (count > 0)
         {
-            Door doorScript = currentDoor.GetComponentInParent<Door>(); // Find the door script on the door object or its parents
-            if (doorScript != null) // Check if the door script was found successfully
-            {
+            if (countdownText != null)
+                countdownText.text = "Respawning in " + count;
+            yield return new WaitForSeconds(1f);
+            count--;
+        }
+
+        if (countdownText != null)
+            countdownText.text = "";
+
+        Respawn();
+    }
+    public void Respawn()
+    {
+        isDead = false;
+        currentHP = maxHP;
+        inPoisonGas = false;
+        inLava = false;
+        SetHPText();
+
+        CharacterController cc = GetComponentInParent<CharacterController>();
+        if (cc != null)
+        {
+            cc.enabled = false;
+            transform.position = respawnPoint.position;
+            cc.enabled = true;
+        }
+        else
+        {
+            transform.position = respawnPoint.position;
+        }
+
+        if (gameOverScreen != null)
+            gameOverScreen.SetActive(false);
+    }
+
+    void OnInteract()
+    {
+        if (currentDoor != null)
+        {
+            Door doorScript = currentDoor.GetComponentInParent<Door>();
+            if (doorScript != null)
                 currentDoor.Interact();
-            }
             else
-            {
-                Debug.Log("No door nearby");
-            }
+                print("Error: No Door found on ");
         }
     }
 
@@ -68,6 +168,12 @@ public class Player : MonoBehaviour
     void SetPointsText()
     {
         pointsText.text = "Points: " + points.ToString();
+    }
+
+    void SetHPText()
+    {
+        if (hpText != null)
+            hpText.text = "HP: " + Mathf.CeilToInt(currentHP).ToString();
     }
 
     void OnTriggerEnter(Collider other)
@@ -87,19 +193,16 @@ public class Player : MonoBehaviour
             }
         }
 
-        if (other.gameObject.CompareTag("Door")) // Check if the object entering the trigger is tagged as a door
-        {
-            currentDoor = other.GetComponentInParent<Door>(); // Store the door script so the player can interact with it later
-        }
+        if (other.gameObject.CompareTag("Door"))
+            currentDoor = other.GetComponentInParent<Door>();
     }
 
     void OnTriggerExit(Collider other)
     {
         if (other.gameObject.CompareTag("Door"))
         {
-        // only clear the door reference if it is already closed
-        if (currentDoor != null && !currentDoor.IsOpen())
-            currentDoor = null;
+            if (currentDoor != null && !currentDoor.IsOpen())
+                currentDoor = null;
         }
     }
-}   
+}
