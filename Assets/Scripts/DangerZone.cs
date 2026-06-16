@@ -8,21 +8,34 @@ public class DangerZone : MonoBehaviour
     public ZoneType zoneType;
 
     [Header("Audio")]
-    [SerializeField] private AudioClip enterSound;
-    [SerializeField] private AudioSource loopingAudioSource; // for continuous sounds
+    [SerializeField] AudioClip zoneSound;
+    AudioSource audioSource;
+
+    void Start()
+    {
+        audioSource = GetComponent<AudioSource>();
+    }
 
     void OnTriggerEnter(Collider other)
     {
+        Debug.Log("DangerZone trigger entered by: " + other.gameObject.tag);
         if (other.CompareTag("Player"))
         {
+            Debug.Log("Player entered danger zone, playing sound");
             Player player = other.GetComponent<Player>();
             if (player == null) return;
 
-            if (enterSound != null)
-                AudioSource.PlayClipAtPoint(enterSound, transform.position);
+            if (audioSource != null && zoneSound != null)
+            {
+                audioSource.clip = zoneSound;
+                audioSource.loop = true;
+                audioSource.Play();
+            }
 
-            if (loopingAudioSource != null)
-                loopingAudioSource.Play();
+            else
+            {
+                Debug.Log("AudioSource: " + (audioSource != null) + " ZoneSound: " + (zoneSound != null));
+            }
 
             switch (zoneType)
             {
@@ -46,9 +59,8 @@ public class DangerZone : MonoBehaviour
             Player player = other.GetComponent<Player>();
             if (player == null) return;
 
-            // stop looping sound
-            if (loopingAudioSource != null)
-                loopingAudioSource.Stop();
+            if (audioSource != null)
+                audioSource.Stop();
 
             switch (zoneType)
             {

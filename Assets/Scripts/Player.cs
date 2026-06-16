@@ -5,29 +5,32 @@ using System.Collections;
 public class Player : MonoBehaviour
 {
     Door currentDoor;
+    SpecialCollectible currentSpecialCollectible;
+    KeycardDoor currentKeycardDoor;
 
     public int collectables;
     public int points;
-    public float currentHP = 100f;
+    public float currentHP = 50f;
 
-    [SerializeField]
-    float maxHP = 100f;
+    [SerializeField] float maxHP = 50f;
 
     [SerializeField] TextMeshProUGUI collectablesText;
-
     [SerializeField] TextMeshProUGUI pointsText;
-
     [SerializeField] TextMeshProUGUI hpText;
-
     [SerializeField] TextMeshProUGUI countdownText;
+    [SerializeField] TextMeshProUGUI inventoryText;
+    [SerializeField] GameObject inventoryPanel;
 
     [Header("Respawn")]
     [SerializeField] Transform respawnPoint;
     [SerializeField] GameObject gameOverScreen;
+    [SerializeField] AudioClip gameOverSound;
 
     bool inPoisonGas = false;
     bool inLava = false;
     bool isDead = false;
+    public bool hasKeycard = false;
+    public bool hasGasmask = false;
 
     public void EnterPoisonGas() => inPoisonGas = true;
     public void ExitPoisonGas() => inPoisonGas = false;
@@ -43,9 +46,13 @@ public class Player : MonoBehaviour
         if (gameOverScreen != null)
             gameOverScreen.SetActive(false);
 
+        if (inventoryPanel != null)
+            inventoryPanel.SetActive(true);
+
         SetCollectablesText();
         SetPointsText();
         SetHPText();
+        UpdateInventoryText();
     }
 
     void Update()
@@ -66,8 +73,8 @@ public class Player : MonoBehaviour
 
     void HandleDamageOverTime()
     {
-        if (inPoisonGas)
-            TakeDamage(1f * Time.deltaTime);
+        if (inPoisonGas && !hasGasmask)
+            TakeDamage(2f * Time.deltaTime);
 
         if (inLava)
             TakeDamage(10f * Time.deltaTime);
@@ -102,6 +109,9 @@ public class Player : MonoBehaviour
         inLava = false;
         SetHPText();
 
+        if (gameOverSound != null)
+            AudioSource.PlayClipAtPoint(gameOverSound, transform.position);
+
         if (gameOverScreen != null)
             gameOverScreen.SetActive(true);
 
@@ -124,6 +134,7 @@ public class Player : MonoBehaviour
 
         Respawn();
     }
+
     public void Respawn()
     {
         isDead = false;
@@ -158,6 +169,30 @@ public class Player : MonoBehaviour
             else
                 print("Error: No Door found on ");
         }
+
+        if (currentKeycardDoor != null)
+            currentKeycardDoor.Interact(this);
+
+        if (currentSpecialCollectible != null)
+            currentSpecialCollectible.Collect(this);
+    }
+
+    public void UpdateInventoryText()
+    {
+        if (inventoryText == null) return;
+
+        if (inventoryPanel != null)
+            inventoryPanel.SetActive(true);
+
+        string inventory = "Inventory\n\n";
+
+        if (hasKeycard)
+            inventory += "Keycard\n";
+
+        if (hasGasmask)
+            inventory += "Gasmask\n";
+
+        inventoryText.text = inventory;
     }
 
     void SetCollectablesText()
@@ -177,7 +212,7 @@ public class Player : MonoBehaviour
     }
 
     void OnTriggerEnter(Collider other)
-    {
+    {   
         if (other.gameObject.CompareTag("Collectibles"))
         {
             Collectibles col = other.GetComponentInParent<Collectibles>();
@@ -185,9 +220,7 @@ public class Player : MonoBehaviour
             {
                 collectables++;
                 points += col.points;
-
                 col.Collect();
-
                 SetCollectablesText();
                 SetPointsText();
             }
@@ -195,6 +228,12 @@ public class Player : MonoBehaviour
 
         if (other.gameObject.CompareTag("Door"))
             currentDoor = other.GetComponentInParent<Door>();
+
+        if (other.gameObject.CompareTag("KeycardDoor"))
+            currentKeycardDoor = other.GetComponentInParent<KeycardDoor>();
+
+        if (other.gameObject.CompareTag("SpecialCollectible"))
+            currentSpecialCollectible = other.GetComponentInParent<SpecialCollectible>();
     }
 
     void OnTriggerExit(Collider other)
@@ -203,6 +242,16 @@ public class Player : MonoBehaviour
         {
             if (currentDoor != null && !currentDoor.IsOpen())
                 currentDoor = null;
+        }
+
+        if (other.gameObject.CompareTag("KeycardDoor"))
+        {
+            currentKeycardDoor = null;
+        }
+
+        if (other.gameObject.CompareTag("SpecialCollectible"))
+        {
+            currentSpecialCollectible = null;
         }
     }
 }
