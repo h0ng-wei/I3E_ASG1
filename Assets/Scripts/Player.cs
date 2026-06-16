@@ -5,11 +5,9 @@ public class Player : MonoBehaviour
 {
     Door currentDoor; // Store the door object the player is currently able to interact with
 
-    [SerializeField]
-    int collectables;
-
-    [SerializeField]
-    int points;
+    public int collectables;
+    public int points;
+    public float currentHP = 100f;
 
     [SerializeField]
     int targetPoints = 50;
@@ -39,10 +37,8 @@ public class Player : MonoBehaviour
         if (currentDoor != null)
         {
             float distance = Vector3.Distance(transform.position, currentDoor.transform.position);
-            Debug.Log("Distance to door: " + distance);
             if (distance > 5f)
             {
-                Debug.Log("Auto closing door");
                 currentDoor.ForceClose();
             }
         }
