@@ -165,7 +165,7 @@ Possible inventory items:
 
 ---
 
-### Water Zone
+### Acid Water Zone
 
 **Effect**
 
@@ -448,7 +448,7 @@ Used for:
 Source: Sketchfab
 
 Model: Gas Mask  
-Creator: yyyyyyyyyyyyy (replace with the actual creator's name from Sketchfab)
+Creator: David Wigforss
 
 URL:
 https://sketchfab.com/3d-models/gas-mask-2eb180c68ac146989a8a3247ab19b6ae
