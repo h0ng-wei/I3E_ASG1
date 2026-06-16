@@ -442,6 +442,36 @@ Used for:
 - TextMeshPro
 
 ---
+### Models
+
+#### Gas Mask
+Source: Sketchfab
+
+Model: Gas Mask  
+Creator: yyyyyyyyyyyyy (replace with the actual creator's name from Sketchfab)
+
+URL:
+https://sketchfab.com/3d-models/gas-mask-2eb180c68ac146989a8a3247ab19b6ae
+
+Used for:
+- Gasmask special collectible
+- Poison gas protection gameplay mechanic
+- Inventory item representation
+
+License:
+Please refer to the original Sketchfab model page for the license terms before submission. Sketchfab models may use Creative Commons or custom licenses depending on the creator. :contentReference[oaicite:0]{index=0}
+
+---
+
+### Models and Assets Summary
+
+| Asset | Source | Purpose |
+|---------|---------|---------|
+| Nature Sound FX | Unity Asset Store | Ambient environmental audio |
+| Doors Small Sound Pack | Unity Asset Store | Door interaction sounds |
+| Cartoon FX Remaster Free | Unity Asset Store | Collectible particle effects |
+| Free Lava Shader | Unity Asset Store | Lava hazard material |
+| Gas Mask Model | Sketchfab | Gasmask collectible item |
 
 ### Acknowledgements
 
