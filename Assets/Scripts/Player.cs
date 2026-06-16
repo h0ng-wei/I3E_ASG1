@@ -1,42 +1,91 @@
+// =============================================================================
+// Player.cs
+// Manages the player's stats, interactions, damage, death and respawning.
+// =============================================================================
+
 using UnityEngine;
 using TMPro;
 using System.Collections;
 
 public class Player : MonoBehaviour
 {
+    /// <summary>The door the player is currently near and able to interact with.</summary>
     Door currentDoor;
+
+    /// <summary>The special collectible the player is currently near and able to pick up.</summary>
     SpecialCollectible currentSpecialCollectible;
+
+    /// <summary>The keycard door the player is currently near and able to interact with.</summary>
     KeycardDoor currentKeycardDoor;
 
+    /// <summary>The number of collectibles the player has collected.</summary>
     public int collectables;
+
+    /// <summary>The total points the player has earned.</summary>
     public int points;
+
+    /// <summary>The player's current HP.</summary>
     public float currentHP = 50f;
 
+    /// <summary>The player's maximum HP.</summary>
     [SerializeField] float maxHP = 50f;
 
+    /// <summary>UI text that displays the number of collectables collected.</summary>
     [SerializeField] TextMeshProUGUI collectablesText;
+
+    /// <summary>UI text that displays the player's current points.</summary>
     [SerializeField] TextMeshProUGUI pointsText;
+
+    /// <summary>UI text that displays the player's current HP.</summary>
     [SerializeField] TextMeshProUGUI hpText;
+
+    /// <summary>UI text that displays the respawn countdown.</summary>
     [SerializeField] TextMeshProUGUI countdownText;
+
+    /// <summary>UI text that displays the player's inventory items.</summary>
     [SerializeField] TextMeshProUGUI inventoryText;
+
+    /// <summary>The panel behind the inventory text.</summary>
     [SerializeField] GameObject inventoryPanel;
 
     [Header("Respawn")]
+    /// <summary>The transform the player respawns at when they die.</summary>
     [SerializeField] Transform respawnPoint;
+
+    /// <summary>The game over screen shown when the player dies.</summary>
     [SerializeField] GameObject gameOverScreen;
+
+    /// <summary>The sound played when the player dies.</summary>
     [SerializeField] AudioClip gameOverSound;
 
+    /// <summary>Whether the player is currently in poison gas.</summary>
     bool inPoisonGas = false;
+
+    /// <summary>Whether the player is currently in lava.</summary>
     bool inLava = false;
+
+    /// <summary>Whether the player is currently dead.</summary>
     bool isDead = false;
+
+    /// <summary>Whether the player has collected the keycard.</summary>
     public bool hasKeycard = false;
+
+    /// <summary>Whether the player has collected the gasmask.</summary>
     public bool hasGasmask = false;
 
+    /// <summary>Sets the player as being in poison gas.</summary>
     public void EnterPoisonGas() => inPoisonGas = true;
+
+    /// <summary>Sets the player as no longer being in poison gas.</summary>
     public void ExitPoisonGas() => inPoisonGas = false;
+
+    /// <summary>Sets the player as being in lava.</summary>
     public void EnterLava() => inLava = true;
+
+    /// <summary>Sets the player as no longer being in lava.</summary>
     public void ExitLava() => inLava = false;
 
+    /// <summary>Initializes the player's stats and UI on scene load.</summary>
     void Start()
     {
         collectables = 0;
@@ -55,12 +104,14 @@ public class Player : MonoBehaviour
         UpdateInventoryText();
     }
 
+    /// <summary>Handles door auto close and damage over time every frame.</summary>
     void Update()
     {
         HandleDoorAutoClose();
         HandleDamageOverTime();
     }
 
+    /// <summary>Closes the current door automatically when the player walks too far away.</summary>
     void HandleDoorAutoClose()
     {
         if (currentDoor != null)
@@ -71,6 +122,7 @@ public class Player : MonoBehaviour
         }
     }
 
+    /// <summary>Applies damage over time when the player is in a danger zone.</summary>
     void HandleDamageOverTime()
     {
         if (inPoisonGas && !hasGasmask)
@@ -80,6 +132,8 @@ public class Player : MonoBehaviour
             TakeDamage(10f * Time.deltaTime);
     }
 
+    /// <summary>Reduces the player's HP by the given amount and triggers death if HP reaches zero.</summary>
+    /// <param name="amount">The amount of damage to deal.</param>
     public void TakeDamage(float amount)
     {
         if (isDead) return;
@@ -91,6 +145,7 @@ public class Player : MonoBehaviour
             Die();
     }
 
+    /// <summary>Instantly kills the player.</summary>
     public void InstantDeath()
     {
         if (isDead) return;
@@ -99,6 +154,7 @@ public class Player : MonoBehaviour
         Die();
     }
 
+    /// <summary>Handles the player's death by showing the game over screen and starting the respawn countdown.</summary>
     void Die()
     {
         if (isDead) return;
@@ -118,6 +174,7 @@ public class Player : MonoBehaviour
         StartCoroutine(Countdown());
     }
 
+    /// <summary>Counts down from 3 and then respawns the player.</summary>
     IEnumerator Countdown()
     {
         int count = 3;
@@ -135,6 +192,7 @@ public class Player : MonoBehaviour
         Respawn();
     }
 
+    /// <summary>Respawns the player at the respawn point and resets their stats.</summary>
     public void Respawn()
     {
         isDead = false;
@@ -159,6 +217,7 @@ public class Player : MonoBehaviour
             gameOverScreen.SetActive(false);
     }
 
+    /// <summary>Called automatically by the Input System when the player presses E to interact.</summary>
     void OnInteract()
     {
         if (currentDoor != null)
@@ -167,7 +226,7 @@ public class Player : MonoBehaviour
             if (doorScript != null)
                 currentDoor.Interact();
             else
-                print("Error: No Door found on ");
+                print("Error: No Door found on " + currentDoor.name);
         }
 
         if (currentKeycardDoor != null)
@@ -177,6 +236,7 @@ public class Player : MonoBehaviour
             currentSpecialCollectible.Collect(this);
     }
 
+    /// <summary>Updates the inventory UI text with the player's current items.</summary>
     public void UpdateInventoryText()
     {
         if (inventoryText == null) return;
@@ -195,24 +255,28 @@ public class Player : MonoBehaviour
         inventoryText.text = inventory;
     }
 
+    /// <summary>Updates the collectables UI text.</summary>
     void SetCollectablesText()
     {
         collectablesText.text = "Collectables: " + collectables.ToString() + " / 40";
     }
 
+    /// <summary>Updates the points UI text.</summary>
     void SetPointsText()
     {
         pointsText.text = "Points: " + points.ToString();
     }
 
+    /// <summary>Updates the HP UI text.</summary>
     void SetHPText()
     {
         if (hpText != null)
             hpText.text = "HP: " + Mathf.CeilToInt(currentHP).ToString();
     }
 
+    /// <summary>Detects when the player enters a trigger collider and handles the appropriate interaction.</summary>
     void OnTriggerEnter(Collider other)
-    {   
+    {
         if (other.gameObject.CompareTag("Collectibles"))
         {
             Collectibles col = other.GetComponentInParent<Collectibles>();
@@ -236,6 +300,7 @@ public class Player : MonoBehaviour
             currentSpecialCollectible = other.GetComponentInParent<SpecialCollectible>();
     }
 
+    /// <summary>Detects when the player exits a trigger collider and clears the appropriate reference.</summary>
     void OnTriggerExit(Collider other)
     {
         if (other.gameObject.CompareTag("Door"))

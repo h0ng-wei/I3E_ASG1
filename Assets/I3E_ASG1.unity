@@ -2287,13 +2287,13 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 3aed4a637c377d5449937c7afca62b9b, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 0.86
+  m_Volume: 0.59
   m_Pitch: 1
   Loop: 1
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
-  Priority: 128
+  Priority: 178
   DopplerLevel: 1
   MinDistance: 1
   MaxDistance: 500
@@ -24207,7 +24207,7 @@ MonoBehaviour:
   _rotation: {x: 0, y: 90, z: 0}
   _speed: 0.25
   onCollectEffect: {fileID: 9157105887711914197, guid: c4f829cb7dd4b864caf8832ec5b1ee55, type: 3}
-  points: 10
+  points: 11
   collectSound: {fileID: 8300000, guid: 365c69503804a094ba87c9370e8e5d0e, type: 3}
 --- !u!65 &287337524
 BoxCollider:
